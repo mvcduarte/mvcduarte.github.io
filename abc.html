@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Marcus Duarte webpage</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles for this template -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- MathJax -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="posts.html">Posts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://www.astro.iag.usp.br/~mvcduarte/">Astronomy</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="cv/cv.pdf">CV</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('img/rockets_nasa.jpg')">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <h1>Welcome to my webpage!</h1>
+              <span class="subheading">Machine Learning and Statistical Inferences</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+
+            <h4 class="subheading">Approximate Bayesian Computation (ABC)</h4>
+
+            <p> What to do when you do not have a likelihood? One of the answers for this question is the Approximate Bayesian Computation (a.k.a. ABC). This bayesian approach can be used to solve several problems in Statistics, e.g. to compare models, regressions, etc. </p>
+
+            <p> In summary, the ABC algorithm works as follows: </p>
+
+            <ul>
+            <li>Once the model and its parameters \(\theta_i\) are defined, the algorithm samples the parameter space by generating a large enough set of values, following the parameter priors \(P(\theta_i\)).</li>
+            <li>The distances between the data and the sampled model, generated in the previous step, are calculated: \(D_i(y_i, y_{model, i}\)).  </li>
+            <li>The posterior of parameters space is built using a small fraction of the \(\theta_i\) which is defined as \(D_i \le \epsilon\). In general, the threshold value \(\epsilon\) is defined as a function of percentiles. </li>
+            </ul>
+
+            <p>Note that we do not use any <a href='https://en.wikipedia.org/wiki/Figure_of_merit'>Figure-of-Merit</a> to say that the parameter set \(\theta_i\) is good or bad. The only one metric is the comparison between the sampled model and the observed data. </p>
+
+            Back to the real world, let's suppose a simple problem to be solved here. You have some data (\(x_i\), \(y_i\)) which clearly demands a linear fitting, i.e., \(y_i = a x_i + b\) (\(a\) and \(b\) correspond to \(\theta_i\)). It is important to say that this data also has some noise. Figure 1 shows the correlation between \(x_i\) and \(y_i\). How to fit a linear equation here? Maybe you can just use the \(\chi^2\) as the Figure-of-Merit and find the best values of \(a\) and \(b\) by exploring the parameter space and comparing the models. But let's suppose you do not know the \(\chi^2\) reduction and you have to fit a linear function on the data. Thus, we start a <a href='http://www.python.org'> Python </a>code by loading packages: </p>
+
+            <code style="color:black"><p>
+              import numpy as np<br />
+              import matplotlib.pyplot as plt<br />
+              import pymc3 as pm<p>
+            </code>
+
+            <p> After that, we might define a function or routine to generate some linear behavior of a mock data, also including some noise into the \(y\) array.
+
+            <code style="color:green"><p>
+            def </code><code style="color:red">generate_mock_data</code><code style="color:black">(n_points, a0, b0):</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp; Generate some mock data (linear)</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp;x = np.linspace(0., 1., n_points)</br>
+                &emsp;&emsp;epsilon = np.random.normal(0., 0.2, n_points) # gaussian noise </br>
+                &emsp;&emsp;y = (a0 * x + b0) + epsilon </br>
+                &emsp;&emsp;</br>
+                &emsp;&emsp;return x, y</br>
+
+            </code>
+
+            <p>
+              Figure 1 shows the data generated by this routine using gaussian noise. The next routine draws the parameter space and calculates the distance between the modelled and observed data. 
+            </p>
+
+            <figure>
+            <img class="img-fluid" src="graphs/input.png" alt="">
+            <figcaption>Figure 1: The input dataset (\(x\), \(y\)) showing a linear trend. Note some dispersion which is due to a gaussian noise. </figcaption>
+            </figure>
+
+            <code style="color:green"><p>
+            def </code><code style="color:red">draw_sample</code><code style="color:black">(n, a_range, b_range):</br>
+
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp;Draw n parameters sets of a and b</br>
+                &emsp;&emsp;"""</br>
+
+                &emsp;&emsp;# Assuming FLAT priors for a and b.</br>
+
+                &emsp;&emsp;#a_draw = np.random.uniform(a_range[0], a_range[1], n)</br>
+                &emsp;&emsp;#b_draw = np.random.uniform(b_range[0], b_range[1], n)</br>
+
+                </br>
+                &emsp;&emsp;# Assuming a gaussian prior of a and b.</br>
+                &emsp;&emsp; a_draw = np.random.normal(np.mean(a_range), 0.2, n)</br>
+                &emsp;&emsp; b_draw = np.random.normal(np.mean(b_range), 0.2, n)</br>
+                </br>
+
+                &emsp;&emsp;# Calculate distances </br>
+
+                &emsp;&emsp;dist_draw = np.zeros(len(a_draw))</br>
+                &emsp;&emsp;for i in range(len(a_draw)):</br>
+                &emsp;&emsp;&emsp;&emsp;    y_draw = a_draw[i] * x + b_draw[i]</br>
+                &emsp;&emsp;&emsp;&emsp;    dist_draw[i] = sum(abs(y_draw - y))</br>
+                </br>
+                &emsp;&emsp;return a_draw, b_draw, dist_draw</br>
+            </code>
+
+            <p>
+              where the variables <code style="color:black">a_range</code> and <code style="color:black">b_range</code> correspond to the \(a\) and \(b\) ranges to be sampled, respectively. Note that our result is sensitive to the priors functions, being uniform or gaussian functions over the parameter space. Then we start defining some values to generate the mock and to sample the parameter space. 
+            </p>
+
+            <code style="color:blue"><p>
+
+              n_draw = 50000 # sampling number</br>
+              a0 = 2. # input slope coefficient </br>
+              b0 = 1.5 # input interception coefficient </br>
+              a_range = [0.1, 3.] # slope coefficient range </br>
+              b_range = [0.1, 3.] # interception coefficient range </br>
+
+              n_points = 200 # input number of points </br>
+
+              threshold = 1.5 # threshold of smallest distances (in percentage) </br>
+
+              n_posterior = 30 # number of posterior models to be plotted </br>
+
+              np.random.seed(123456789) # seed number </br>
+            </code>
+
+            <p>
+              Now we generate the data, run the sampling and calculate the distance for each parameter set \(a\) and \(b\). In total, there are 50000 sets. Figure 2 shows the total distribution of distances (left), the "best" values of \(a\) (center) and the "best" values of \(b\) (right). Note that imposing low values of the variable \(threshold\), it only selects the closest/best models to reproduce the observed data.     
+            </p>
+
+            <figure>
+            <img class="img-fluid" src="graphs/dist_a_b_0.2_gaussian.png" alt="">
+            <figcaption>Figure 2: Left: distance calculated between the sampled sets of \(a\) and \(b\). Center: The distribution of "best" sets of \(a\) using the variable \(threshold\). Right: The distribution of "best" sets of \(b\) using the variable \(threshold\). The black and red vertical lines represent the input and mean output values, respectively. </figcaption>
+            </figure>
+
+            <p>
+              It seems we almost got our goal, right? Wait a minute..let's check the fit done by the algorithm. Figure 3 shows the linear regression and the input data using gaussian priors for \(a\) and \(b\) (check function <code style="color:red">draw_sample</code>). Note that our model got close (visually) in order to reproduce the data but the output values of \(a\) and \(b\) are not in agreement with the input ones. It is shown in the figure, considering the uncertainties in 1\(\sigma\). 
+            </p> 
+
+            <figure>
+            <img class="img-fluid" src="graphs/fitting_0.2_gaussian.png" alt="">
+            <figcaption>Figure 3: Linear fitting using the ABC algorithm. Note that the fit parameters and their uncertainties do not include the input values of \(a\) and \(b\). Despite the input and output lines are quite close, it seems that we can do better (light red lines represent 1 \(\sigma\)). </figcaption>
+            </figure>
+
+            So what to do then? Let's change the priors distributions because it seems that they are not suitable for this fit. Let's substitute the gaussian priors for \(a\) and \(b\) in the function <code style="color:red">draw_sample</code> including uniform priors and check our new fit. </p>
+
+
+            <code style="color:black"><p>
+                &emsp;&emsp;# Assuming FLAT priors for a and b.</br>
+
+                &emsp;&emsp;a_draw = np.random.uniform(a_range[0], a_range[1], n)</br>
+                &emsp;&emsp;b_draw = np.random.uniform(b_range[0], b_range[1], n)</br>
+            </code>
+
+            <p>
+              By running the code again, Figure 4 shows our new fitting using now uniform priors for \(a\) and \(b\), covering the parameter ranges defined above. Two things to notice here: 1 - The dispersion of fit values is visually higher, 2 - the fit values got closer to the input values but they include the input parameters in 1 \(\sigma\)). 
+            </p>
+
+            <figure>
+            <img class="img-fluid" src="graphs/fitting_uniform.png" alt="">
+            <figcaption>Figure 4: The same as Figure 3 but using uniform priors for \(a\) and \(b\).</figcaption>
+            </figure>
+
+            <p>
+            What is the best prior and threshold value? It is a good question and strongly depends on your problem. For this problem, the gaussian prior did not include the solution in 1 \(\sigma\) but presented lower dispersion. From this point of view, it seems that the gaussian choice did not sample properly the parameter space. Once using the uniform one, our solution is in agreement with the input parameters but the error bars for \(a\) and \(b\) are larger. If you want the code for this post, just check my GitHub repository <a href='https://github.com/mvcduarte/Approximate_Bayesian_Computation_ABC'> ABC</a>. 
+            </p>
+
+            <p> 
+
+            </p>
+
+            <p><b>Some references:</b></p>
+              <p>
+            <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Approximate_Bayesian_computation">Wikipedia: Approximate Bayesian Computation</a>
+            </li>
+            <li> 
+              <a href="https://arxiv.org/abs/1504.06129">Article in Astronomy using ABC: "cosmoabc: Likelihood-free inference via Population Monte Carlo Approximate Bayesian Computation"</a>
+            </li>
+            <li>
+              <a href="https://pypi.org/project/astroabc/">AstroABC package in Python</a>
+            </li>
+            <!--
+            $$ {J(\theta) =\frac{1}{2m} [\sum^m_{i=1}(h_\theta(x^{(i)}) - y^{(i)})2 + \lambda\sum^n_{j=1}\theta^2_j} $$
+            -->
+
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="https://www.facebook.com/marcus.duarte.92">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/mvcduarte">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/clean-blog.min.js"></script>
+
+  </body>
+
+</html>
