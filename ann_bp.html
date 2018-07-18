@@ -21,6 +21,8 @@
     <!-- Custom styles for this template -->
     <link href="css/clean-blog.min.css" rel="stylesheet">
 
+    <!-- MathJax -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
   </head>
 
   <body>
@@ -75,44 +77,174 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
 
-            <h2 class="section-heading">Neural Network: Back Propagation</h2>
+            <h4 class="subheading">Artificial Neural Networks - Part 2: BackPropagation</h4>
 
+            <p>
+            <p, style="text-align:justify"> 
+            In this serie of Neural Network posts, I demostrated in the <a href='ann_fp.html'>Part 1</a> how to implement the Artificial Neural Network (<a href='https://en.wikipedia.org/wiki/Artificial_neural_network'>ANN</a>) algorithm from scratch, more specifically the Foward Propagation. This second post of Neural Network will show the BackPropagation procedure, i.e., how to update the weights and bias described in the Part 1 to get closer and consequently achieve the best solution to reproduce the prediction/classification of your sample.   
+            </p>
 
-            <p>Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.</p>
+            <p, style="text-align:justify">
+            Let us remember the formalism described in the Part 1 post. Following the same architecture shown in the previous post, the Foward Propagation can be defined in only one line, 
+            </p>
 
-            <p>Science cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.</p>
+            $$ a_3 = \sigma_2(\sum \underbrace{(\sigma_1(\sum X * W_1 + b_1))}_{a_2} * W_2 + b_2) $$
+            
+            </br>
+            
+            In Python syntax, the Foward Propagation is then written as, 
 
-            <p>What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.</p>
+            <code style="color:green"><p>
+            def </code><code style="color:red">foward_propagation</code><code style="color:black">(X, model):</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp; Foward Propagation</br>
+                &emsp;&emsp;"""</br>
+                </br>
+                &emsp;&emsp;W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2'] </br>
+                </br>
+                &emsp;&emsp;z1 = X.dot(W1) + b1 </br>
+                &emsp;&emsp;a2 = sigmoid(z1, deriv = False)</br>
+                &emsp;&emsp;z2 = a2.dot(W2) + b2 </br>
+                &emsp;&emsp;a3 = softmax(z2)</br>
+                </br>
+                &emsp;&emsp;return a3</br>
+            </br>
+            </code>
+            being the activation function between the Input and Hidden Layer a sigmoid and a softmax between the Hidden Layer and the Output Layer. The values of weights and bias arrays are started in a randomic way and at the first iteraction or epoch, the prediction and classification is quite bad. 
+            <p>
+            In this way, our next step is to update the weights and bias arrays after each iteraction (Foward Propagation) in order to get closer to the desired goal. The Back Propagation calculates the difference between the obtained and target values at the output layer and calculates the gradient of weights and bias to update them. The Gradient Descent is employed here and it is based on the derivatives of the loss function \(E\) as a function of the weights and bias, i.e.,   
 
-            <p>A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.</p>
+            $$ W_i \leftarrow W_i - \epsilon \frac{\partial E}{\partial W_i} \ \ \ \ \ ;\ \ \ \ \ b_i \leftarrow b_i - \epsilon \frac{\partial E}{\partial b_i}$$
 
-            <p>For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.</p>
+            where \(\epsilon\) is known as learning rate. 
+            </p>
+            <p>
+            The loss function can be defined in several ways but here we define it as an error function. Then, 
 
-            <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+            $$ E = \frac{1}{2} \sum_i(a_{3,i} - Y_i)^2 $$
 
-            <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+            where \(Y\) represents the target values of classification or regression and \(a_{3,i}\) is the i-th term of the Output Layer array. According to the equation of Gradient Descent above, our next step is to calculate the derivatives of loss function. Using the <a href='https://en.wikipedia.org/wiki/Chain_rule'>Chain Rule</a>, we can write these terms as
 
-            <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
+            $$ \frac{\partial E}{\partial W_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial W_2}}_{3} $$  
+    
+            and each derivative (1, 2 and 3) can be calculated in a separated way. The first term can calculated as the partial derivative of the sum, 
 
-            <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+            $$ \frac{\partial E}{\partial a_3} = \frac{\partial}{\partial a_3} \left(\frac{1}{2}\sum_i(Y_i - a_{i,3})^2 \right) = (a_{i,3} - Y_i)$$
 
-            <h2 class="section-heading">Reaching for the Stars</h2>
+            The second term is basically the derivative of the activation term, 
 
-            <p>As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.</p>
+            $$ \frac{\partial a_3}{\partial z_2} = \frac{\partial}{\partial z_2}\left( \sigma_2(z_2)\right) = \sigma_2'(z_2) $$
 
-            <a href="#">
-              <img class="img-fluid" src="img/post-sample-image.jpg" alt="">
-            </a>
-            <span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
+            Note that the derivative of the sigmoid function is \(\sigma'(x) = x * (1 - x)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. The last and third term can be written as, 
 
-            <p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
+            $$ \frac{\partial z_2}{\partial W_2} = \frac{\partial}{\partial W_2}\left( \sum a_2 * W_2 + b_2 \right) = a_2 $$
 
-            <p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+            Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
 
-            <p>Placeholder text by
-              <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by
-              <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
-          </div>
+            $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)}_{\delta_2} \underbrace{\sigma'_2(z_2)}_{softmax\ deriv. = 1} a_3 = a_3^T \delta_2 $$ 
+
+            The derivative of softmax activation function is equals to 1. On the other hand, the derivative regards the bias factor \(b_2\) can be calculated using the same way as defined above for \(W_2\). Similarly, the derivative can be written as follows, 
+
+            $$ \frac{\partial E}{\partial b_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial b_2}}_{3} $$  
+
+            Note that the terms 1 and 2 were already calculated above and only the third term needs to be calculated. This derivative is equals to unity, i.e., \( \frac{\partial a_3}{\partial b_2} = \frac{\partial}{\partial b_2} (b_2 + \sum a_2 * W_2)=1 \) so the equation above can be re-written as, 
+
+            $$ \frac{\partial E}{\partial b_2} = (a_3 - Y) \sigma'_2(z_3)(1) = \delta_2 $$              
+            <p>
+            Similarly, we can calculate the derivatives regards the weights and bias terms \(W_1\) and \(b_1\). However, these derivatives are a bit more complicated to be derived but still deductible,  
+
+            $$ \frac{\partial E}{\partial W_1} = \frac{\partial E}{\partial a_2} \frac{\partial a_2}{\partial z_2} \frac{\partial z_2}{\partial W_1} = ... = X^T \delta_1 $$              
+            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Writting the derivative of the error function regards the first bias term (\(b_1\)), 
+
+            $$ \frac{\partial E}{\partial b_1} = \delta_1$$.
+
+            In practical terms, the Back Propagation algorithm written in Python can be expressed by the routine below.
+            <code style="color:green"><p>
+            def </code><code style="color:red">back_propagation</code><code style="color:black">(model_ann, a3, a2, model):</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp; Back Propagation</br>
+                &emsp;&emsp;"""</br>
+                </br>
+                &emsp;&emsp;W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2'] </br>
+                </br>
+                &emsp;&emsp;# Backpropagating..</br>
+                </br>
+                &emsp;&emsp;# Define delta2 and delta1</br>
+                &emsp;&emsp;delta2 = a3 </br>
+                &emsp;&emsp;delta2[range(ann_model.n_train), ann_model.Y_train] -= 1 </br>
+                &emsp;&emsp;delta1 = (delta2).dot(W2.T) * sigmoid(a2, deriv = True)</br>
+                </br> 
+                &emsp;&emsp;# Weights</br>
+                </br> 
+                &emsp;&emsp;dW2 = a2.T.dot(delta2)</br>
+                &emsp;&emsp;dW1 = ann_model.X_train.T.dot(delta1)</br>
+                </br> 
+                &emsp;&emsp;# Bias</br>
+                </br> 
+                &emsp;&emsp;db2 = (delta2).sum(axis=0)</br>
+                &emsp;&emsp;db1 = (delta1).sum(axis=0)</br>
+                </br> 
+                &emsp;&emsp;# Add regularization terms (not for b1 and b2)</br>
+                </br> 
+                &emsp;&emsp;dW2 += ann_model.reg_lambda * W2 </br>
+                &emsp;&emsp;dW1 += ann_model.reg_lambda * W1</br>
+                </br> 
+                &emsp;&emsp;# Update parameter (gradient descent)</br>
+                </br> 
+                &emsp;&emsp;W1 += -ann_model.epsilon * dW1 </br>
+                &emsp;&emsp;b1 += -ann_model.epsilon * db1 </br>
+                &emsp;&emsp;W2 += -ann_model.epsilon * dW2 </br>
+                &emsp;&emsp;b2 += -ann_model.epsilon * db2 </br>
+                </br> 
+                &emsp;&emsp;# Update parameters to the model </br>
+                </br> 
+                &emsp;&emsp;model = { 'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}</br> 
+                </br> 
+                &emsp;&emsp;return model</br>
+            </br>
+            </code>
+
+            Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
+            <ul>
+            <li>
+             Pass the training sample through the ANN, using the weights and bias (Foward Propagation).
+            </li>
+            <li>
+             Calculate the Gradient Descent using the Back Propagation formalism and update the weights \(W\) and bias \(b\) terms. 
+            </li>
+            <li>
+             Once the weights and bias terms are updated, pass again the training sample through the Neural Network and restart the cycle.  
+            </li>
+            </ul>
+
+            <p>
+            Using the dataset <a href='http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html'>make_moons</a>, we run our Neural Network over 1,000 iteractions, calculating the Foward and Back Propagations each epoch. Figure 2 shows the parameter space, some elements or objects of the training sample and the shaded area indicates the classification and its border between the two classes (red and blue). At the top of the animation, we can see the number of iteractions of the Neural Network and the score (fraction of objects in the training sample correctly classified). As the number of iteractions increases, the weights and bias terms get closer to the solutions and consequently the objects are correctly classified. The borders defined by the Neural Network between the groups becomes more efficient and well defined. It is important to mention that the higher the number of nodes in the hidden layer or number of hidden layers, the better is the classification as the training runs. Again, the overfitting starts having an important role in this high-complexity models. The example shown in Figure 2 uses 10 nodes in the hidden layers and presented a score of 97% at the end of the iteractions. For this example, we used the sigmoid at the Input-Hidden Layers and the softmax at the Hidden-Output Layers. Of course you can play with that and change the activation functions (e.g. tanh(x)) shows above, but the equations derivated above slightly change.  
+            </p>    
+
+            <figure>
+            <img class="img-fluid" src="graphs/animation_ann.gif" alt="">
+            <figcaption>Figure 2: The training sample in the feature space. Points in different colours represent distinct classes and the shaded areas shows the probability regions of classes. </figcaption>
+            </figure>
+
+            <p> Now you know how a Neural Network really works! If you are interested in playing a bit with this code, go to my Github and downloads the repository <a href='https://github.com/mvcduarte/Neural-Network'> </a>. Remember to download the training/validation and test samples as well. Hereafter, you can also use other packages driven and optimized for Neural Network, such as <a href='https://keras.io/'>Keras</a>, <a href='https://www.tensorflow.org/'>Tensorflow</a> and <a href='http://deeplearning.net/software/theano/'> Theano</a>.
+
+            <p><b>Some references:</b></p>
+              <p>
+            <ul>
+            <li><a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">Wild ML</a>
+            </li>
+            <li> 
+              <a href="https://theclevermachine.wordpress.com/2014/09/11/a-gentle-introduction-to-artificial-neural-networks/">The Clever Machine's Blog"</a>
+            </li>
+            <li>
+              <a href="https://beckernick.github.io/neural-network-scratch/">Nick Becker's blog</a>
+            </li>
+
+            <li>
+              <a href="http://www.cristiandima.com/neural-networks-from-scratch-in-python/">Cristian Dima's Blog</a>
+            </li>
+            </ul>
+           </div>
         </div>
       </div>
     </article>

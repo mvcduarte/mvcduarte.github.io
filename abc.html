@@ -120,7 +120,7 @@
 
             <figure>
             <img class="img-fluid" src="graphs/input.png" alt="">
-            <figcaption>Figure 1: The input dataset (\(x\), \(y\)) showing a linear trend. Note some dispersion which is due to a gaussian noise. </figcaption>
+            <figcaption><b>Figure 1</b>: The input dataset (\(x\), \(y\)) showing a linear trend. Note some dispersion which is due to a gaussian noise. </figcaption>
             </figure>
 
             <code style="color:green"><p>
@@ -178,7 +178,8 @@
 
             <figure>
             <img class="img-fluid" src="graphs/dist_a_b_0.2_gaussian.png" alt="">
-            <figcaption>Figure 2: Left: distance calculated between the sampled sets of \(a\) and \(b\). Center: The distribution of "best" sets of \(a\) using the variable \(threshold\). Right: The distribution of "best" sets of \(b\) using the variable \(threshold\). The black and red vertical lines represent the input and mean output values, respectively. </figcaption>
+            <figcaption><b>Figure 2</b>: Left: distance calculated between the sampled sets of \(a\) and \(b\). Center: The distribution of "best" sets of \(a\) using the variable \(threshold\). Right: The distribution of "best" sets of \(b\) using the variable \(threshold\). The black and red vertical lines represent the input and mean output values, respectively. 
+            </figcaption>
             </figure>
 
             <p>
@@ -187,7 +188,7 @@
 
             <figure>
             <img class="img-fluid" src="graphs/fitting_0.2_gaussian.png" alt="">
-            <figcaption>Figure 3: Linear fitting using the ABC algorithm. Note that the fit parameters and their uncertainties do not include the input values of \(a\) and \(b\). Despite the input and output lines are quite close, it seems that we can do better (light red lines represent 1 \(\sigma\)). </figcaption>
+            <figcaption><b>Figure 3</b>: Linear fitting using the ABC algorithm. Note that the fit parameters and their uncertainties do not include the input values of \(a\) and \(b\). Despite the input and output lines are quite close, it seems that we can do better (light red lines represent 1 \(\sigma\)). </figcaption>
             </figure>
 
             So what to do then? Let's change the priors distributions because it seems that they are not suitable for this fit. Let's substitute the gaussian priors for \(a\) and \(b\) in the function <code style="color:red">draw_sample</code> including uniform priors and check our new fit. </p>
@@ -206,20 +207,11 @@
 
             <figure>
             <img class="img-fluid" src="graphs/fitting_uniform.png" alt="">
-            <figcaption>Figure 4: The same as Figure 3 but using uniform priors for \(a\) and \(b\).</figcaption>
+            <figcaption><b>Figure 4</b>: The same as Figure 3 but using uniform priors for \(a\) and \(b\).</figcaption>
             </figure>
 
             <p>
-            What is the best prior and threshold value? It is a good question and strongly depends on your problem. 
-            For this problem, the gaussian prior did not include the solution in 1 \(\sigma\) but presented lower dispersion. 
-            From this point of view, it seems that the gaussian choice did not sample properly the parameter space. 
-            Once using the uniform one, our solution is in agreement with the input parameters but the error bars for 
-            \(a\) and \(b\) are larger. On the other hand, if your likelihood is known and not computationally quite 
-            expensive to be calculated, I would not recommend you to use ABC. 
-            Then you should use some \(\chi^2\)-reduction method. This algorithm is only suggested when your likelihood 
-            is quite complicated or unknown. If you want the code for this post, just check my GitHub repository 
-            <a href='https://github.com/mvcduarte/Approximate_Bayesian_Computation_ABC'> ABC</a>. 
-              If you have any question or comment, just drop me an <a href="mailto:mvcduarte@gmail.com?Subject=blog_ML" target="_top">e-mail</a>.
+            What is the best prior and threshold value? It is a good question and strongly depends on your problem. For this problem, the gaussian prior did not include the solution in 1 \(\sigma\) but presented lower dispersion. From this point of view, it seems that the gaussian choice did not sample properly the parameter space. Once using the uniform one, our solution is in agreement with the input parameters but the error bars for \(a\) and \(b\) are larger. On the other hand, if your likelihood is known and not computationally quite expensive to be calculated, I would not recommend you to use ABC. Then you should use some \(\chi^2\)-reduction method. This algorithm is only suggested when your likelihood is quite complicated or unknown. If you want the code for this post, just check my GitHub repository <a href='https://github.com/mvcduarte/Approximate_Bayesian_Computation_ABC'> ABC</a>. If you have any question or comment, just drop me an <a href="mailto:mvcduarte@gmail.com?Subject=blog_ML" target="_top">e-mail</a>. 
             </p>
 
             <p> 

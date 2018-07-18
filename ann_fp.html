@@ -21,6 +21,8 @@
     <!-- Custom styles for this template -->
     <link href="css/clean-blog.min.css" rel="stylesheet">
 
+    <!-- MathJax -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
   </head>
 
   <body>
@@ -49,7 +51,6 @@
             <li class="nav-item">
               <a class="nav-link" href="contact.html">Contact</a>
             </li>
-
           </ul>
         </div>
       </div>
@@ -76,43 +77,135 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
 
-            <h2 class="section-heading">Neural Network: Foward Propagation</h2>
+            <h4 class="subheading">Artificial Neural Networks - Part 1: Foward Propagation</h4>
 
+            <p>
+            <p, style="text-align:justify"> 
+            In this serie of Neural Network posts, I will demostrate how to implement the Artificial Neural Network (<a href='https://en.wikipedia.org/wiki/Artificial_neural_network'>ANN</a>) algorithm from scratch. 
+            </p>
 
-            <p>Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.</p>
+            <p, style="text-align:justify">
+            Nowadays, the expressions "Neural Network" and "Deep Learning" are quite fashion in the Big Data and Data Science tutorials and blogs. This algorithm was inspired by biological brain structures (neurons) and its complexity increased a lot since the 70s and 80s. Today, modern computers or clusters allow us to construct complex ANN to classify and predict values in diverse problems in many companies and Universities.         
+            </p>
+            
+            <p, style="text-align:justify">
+            The ANN is composed by a collection of interconnected nodes (artificial neurons) distributed in layers. The connections are responsible to transmit the information from one neuron to another. Once the information arrives at a certain neuron or node, it is firstly processed and then transmited foward. Figure 1 shows the distribution of an ANN, composed by an Input Layer, one Hidden Layer (with \(n_{hidden}\) nodes) and Output Layer. The arrows represent the connections between the nodes. In this context, the "Deep Learning" is commonly referred as a Neural Network with several hidden layers. Initially, the ANN is not able to properly to classify or predict anything. Since it is not trained, the weights and bias terms from all layers are not adjusted to carry out this task. To do so, we use namely two samples of data. The first one is the training sample, which is used to obviouly train the ANN and the second one is the test sample. The former one evaluates the performance of the trained algorithm after the training procedure. As a rule of thumb, the fraction between the training and test samples is around 70%/30% or 60%/40%. In this post, we explain the architecture of the ANN and how the training dataset passes through the Neural Network. The training procedure also needs the Back Propagation, which will be described in the next post.        
+            </p>
 
-            <p>Science cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.</p>
+            <figure>
+            <img src="graphs/ann.png" class="center">
+            <figcaption><b>Figure 1</b>: The Artificial Neural Network composed by the Input Layer (2 nodes), the Hidden Layer (5 nodes) and Output Layer (2 nodes). </figcaption>
+            </figure>
 
-            <p>What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.</p>
+            <p, style="text-align:justify">
+            Mathematically, the ANN is a serie of matrix multiplication, including weights, input data and bias factors that enter at the left side and pass through the net up to the output layer at the right (Figure 1). Following the ANN showed above, the input and output layers contain 2 nodes. The training data is represented here by the matrix \(X\) with dimensions (\(n_{obj}, n_{feature})\). Between two consecutive layers, the data is multiplied by a weight factor and a bias factor is summed. It means that between the Input and Hidden Layers, we have the following matrix multiplication,   
+            </p>
+            $$ z_1 = X * W_1 + b_1$$
 
-            <p>A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.</p>
+            being the dimensions of the weight and bias are equal to (\(n_{feature}, n_{hidden})\) and (\(n_{hidden}, 1)\), respectively. Note that the bias term \(b_1\) is just an additive term and the dimension of \(a_2\) is consequently (\(n_{obj}, n_{hidden})\). The powerful skill of ANNs is represented by their capacity of complex and non-linearity modelling. Just considering the matrix multiplication above is not enough to reach such complexity. The next step is to pass our multiplication matrix result through an activation function, which decides whether it should be considered (or not) as a good or bad result for the layer, given the necessary complexity to fit the model to the data. There are many activation functions around but the main and most famous activation function is the <a href='https://en.wikipedia.org/wiki/Sigmoid_function'>sigmoid</a>. Figure 2 shows the profile of the sigmoid function., being 
 
-            <p>For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.</p>
+            $$ sigmoid(x) = \frac{1}{1 + e^{-x}}$$
 
-            <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+            <figure>
+            <img src="graphs/sigmoid.png" class="center">
+            <figcaption><b>Figure 2</b>: The sigmoid function.</figcaption>
+            </figure>
 
-            <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+            The values of the sigmoid function spam between 0 and 1. The activated values of the Hidden Layer is then defined as \(a_2 = sigmoid(z_1)\). Other examples of activation functions are <a href='https://en.wikipedia.org/wiki/Softmax_function'>softmax</a>, rectified linear unit (<a href='https://en.wikipedia.org/wiki/Rectifier_(neural_networks)'>ReLU</a>) and \(tanh(x)\).
+            </p>
 
-            <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
+            <p>
+            In the Python syntax, the activation function and the matrix multiplication between the Input and Hidden Layers can be written as,  
+            </p> 
 
-            <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+ 
+            <code style="color:black">
+              import numpy as np
+            </code>
+            <code style="color:green"><p>
+            def </code><code style="color:red">sigmoid</code><code style="color:black">(x):</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp; Sigmoid activation function</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp;if deriv == False:</br>
+                &emsp;&emsp;&emsp;&emsp;return 1.0/(1 + np.exp(-x))</br>
+                &emsp;&emsp;else:</br>
+                &emsp;&emsp;&emsp;&emsp;return x * (1.0 - x) </br>
+            </br>
+            # Input -> Hidden Layer
+            </br>
 
-            <h2 class="section-heading">Reaching for the Stars</h2>
+            z1 = X.dot(W1) + b1 </br>
+            a2 = sigmoid(z1, deriv = False) </br>
+            </br>
+            </code>
 
-            <p>As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.</p>
+            <p>
+            Similar procedure between the Input and Hidden Layers is done now between the Hidden Layer and the Output Layer. Note that now we use the output of the hidden layer \(a_2\) as the new input. Thus, 
+            </p>
 
-            <a href="#">
-              <img class="img-fluid" src="img/post-sample-image.jpg" alt="">
-            </a>
-            <span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
+            $$a_3 = softmax(a_2 * W_2 + b_2)$$
+            <p>
+            Between the Hidden Layer and the Output Layer, we just use a different activation function. Here we use the softmax, which is a good choice for probability classifications. It can be written as, 
 
-            <p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
+            $$ softmax(x) = \frac{e^x}{\sum_i e^{x_i}}$$
 
-            <p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+            In Python syntax, it is defined as the  the <code style="color:red">softmax</code> routine, 
+            <p>
 
-            <p>Placeholder text by
-              <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by
-              <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
+            <code style="color:green"><p>
+            def </code><code style="color:red">softmax</code><code style="color:black">(x):</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp; Softmax activation function</br>
+                &emsp;&emsp;"""</br>
+                &emsp;&emsp;exp_x = np.exp(x)</br>
+                &emsp;&emsp;return exp_x / exp_x.sum(axis=1, keepdims=True)</br>
+            </br>
+            # Hidden -> Output Layer
+            </br>
+              z2 = a2.dot(W2) + b2</br> 
+              a3 = softmax(z2)</br>
+            </code>
+            <p>
+            Remember that the dimension of \(a_2\) is (\(n_{obj}, n_{hidden})\) and the weights and bias between the Hidden and Ouput Layers are represented as \(W_2\) and \(b_2\). For the matrix multiplication, their matricial dimensions are (\(n_{hidden}, n_{output})\) and (\(n_{output}, 1)\), respectively. The value \(n_{output}\) represents the number of values atributed to each object in the Output Layer. This can be considered as classes or regression values. For instance, in case of bimodal classification, the output array length is 2 for each object in the training sample. In addition, it can be also considered as proabilities of this element to belong to classes, e.g., \([0.25, 0.75]\). 
+            </p>
+            <p>
+              How many nodes should my ANN have? And how about the number of hidden layers? It really depends on how complex your data is. If you increase the number of nodes in the Hidden Layer, your model will be able to fit more complex and non-linear data. However, it will be more affected by <a href='https://en.wikipedia.org/wiki/Overfitting'>overfitting</a>, which is namely when your model only works on your training sample and fails on the test or any other sample. That's why it is so important to always evaluate the performance of your code with an independent (but representative) sample.  
+            </p>
+            <p>
+             Increasing the number of hidden layers will consequently make your model more complex but you should think carefully before increasing the complexity of the ANN. Again, the overfitting can kill all your performance showing disapointing results on other samples. The increasing complexity also increases the computational time, particularly if your training sample is large enough. It can increase a lot your computational time, being most of time inpractical using an ordinary computer.  
+            </p>
+
+            <p>
+              It is important to know how ANNs work but all this process above is already optimized by several packages in Python and R. Some examples are represented by <a href='https://keras.io/'>Keras</a>, <a href='https://www.tensorflow.org/'>Tensorflow</a> and <a href='http://deeplearning.net/software/theano/'> Theano</a>. Some nice explanations of how ANN works are also in Data Science and Machine Learning blogs, then check the references below. If you want the full code of this post for didatic purposes, please check my <a href='https://github.com/mvcduarte/Neural-Network'>GitHub - Neural Network from Scratch</a> using the <a href='http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html'>make_moons</a> dataset. This post was just half of the story, the next part is the <a href='#'>Neural Networks - Part 2: BackPropagation </a>
+            </p>
+            <!--
+            <figure>
+            <img class="img-fluid" src="graphs/animation_ann.gif" alt="">
+            <figcaption>Figure 2: The training sample in the feature space. Points in different colours represent distinct classes and the shaded areas shows the probability regions of classes. </figcaption>
+            </figure>
+            -->
+
+            <p><b>Some references:</b></p>
+              <p>
+            <ul>
+            <li><a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">Wild ML</a>
+            </li>
+            <li> 
+              <a href="https://theclevermachine.wordpress.com/2014/09/11/a-gentle-introduction-to-artificial-neural-networks/">The Clever Machine's Blog"</a>
+            </li>
+            <li>
+              <a href="https://beckernick.github.io/neural-network-scratch/">Nick Becker's blog</a>
+            </li>
+
+            <li>
+              <a href="http://www.cristiandima.com/neural-networks-from-scratch-in-python/">Cristian Dima's Blog</a>
+            </li>
+            </ul>
+            <!--
+            $$ {J(\theta) =\frac{1}{2m} [\sum^m_{i=1}(h_\theta(x^{(i)}) - y^{(i)})2 + \lambda\sum^n_{j=1}\theta^2_j} $$
+            -->
+
           </div>
         </div>
       </div>
