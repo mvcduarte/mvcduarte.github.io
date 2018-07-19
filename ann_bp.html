@@ -155,7 +155,7 @@
 
             $$ \frac{\partial E}{\partial W_1} = \frac{\partial E}{\partial a_2} \frac{\partial a_2}{\partial z_2} \frac{\partial z_2}{\partial W_1} = ... = X^T \delta_1 $$              
 
-            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = x * (1 - x)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
+            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = \sigma(x) * (1 - \sigma(x)) = a * (1 - a)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
 
             $$ \frac{\partial E}{\partial b_1} = \delta_1$$
 
