@@ -141,9 +141,9 @@
 
             Note that all derivative above are arrays. Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
 
-            $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)}_{\delta_2} \underbrace{\sigma'_2(z_2)}_{softmax\ deriv. = 1} a_3 = a_3^T \delta_2 $$ 
+            $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)\sigma'_2(z_2)}_{\delta_2} a_2 = a_2^T \delta_2 $$ 
 
-            The derivative of softmax activation function is equals to 1. On the other hand, the derivative regards the bias factor \(b_2\) can be calculated using the same way as defined above for \(W_2\). Similarly, the derivative can be written as follows, 
+            On the other hand, the derivative regards the bias factor \(b_2\) can be calculated using the same way as defined above for \(W_2\). Similarly, the derivative can be written as follows, 
 
             $$ \frac{\partial E}{\partial b_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial b_2}}_{3} $$  
 
@@ -155,7 +155,7 @@
 
             $$ \frac{\partial E}{\partial W_1} = \frac{\partial E}{\partial a_2} \frac{\partial a_2}{\partial z_2} \frac{\partial z_2}{\partial W_1} = ... = X^T \delta_1 $$              
 
-            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = \sigma(x) * (1 - \sigma(x)) = a * (1 - a)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
+            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = \sigma(x) * (1 - \sigma(x)) = a * (1 - a)\), if you want the check its deduction, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
 
             $$ \frac{\partial E}{\partial b_1} = \delta_1$$
 
@@ -173,7 +173,7 @@
                 &emsp;&emsp;# Define delta2 and delta1</br>
                 &emsp;&emsp;delta2 = a3 </br>
                 &emsp;&emsp;delta2[range(ann_model.n_train), ann_model.Y_train] -= 1 </br>
-                &emsp;&emsp;delta1 = (delta2).dot(W2.T) * sigmoid(a2, deriv = True)</br>
+                &emsp;&emsp;delta1 = (delta2).dot(W2.T) * a2 * (1. - a2)</br>
                 </br> 
                 &emsp;&emsp;# Weights</br>
                 </br> 
@@ -205,7 +205,11 @@
             </br>
             </code>
 
-            The regularization term (<code>reg_lambda</code>) is used in the routine above but not explictly explained here. This term is employed to avoid overfitting. It will be for another post in the future. Now, just consider <code>reg_lambda = 0</code>. Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
+            The regularization term (<code>reg_lambda</code>) is used in the routine above but not explictly explained here. This term is employed to avoid overfitting. It will be for another post in the future. The learning rate \(\epsilon\) defines the convergence speed, so if you define it large, your best solution will be only around the best solution but always oscillating around it. On the other hand, a relative too small \(\epsilon\) will need more iteractions (computational time) to converge to the best solution. What's the best value? It is a good exercise to start playing with the Neural Network code. Now, just consider <code>reg_lambda = 0</code>. 
+            </p>
+            <p>
+            Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
+            </p>
             <ul>
             <li>
              Pass the training sample through the ANN, using the current weights and bias (Foward Propagation).
