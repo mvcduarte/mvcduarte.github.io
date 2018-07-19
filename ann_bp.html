@@ -123,23 +123,23 @@
 
             $$ E = \frac{1}{2} \sum_i(a_{3,i} - Y_i)^2 $$
 
-            where \(Y\) represents the target values of classification or regression and \(a_{3,i}\) is the i-th term of the Output Layer array. According to the equation of Gradient Descent above, our next step is to calculate the derivatives of loss function. Using the <a href='https://en.wikipedia.org/wiki/Chain_rule'>Chain Rule</a>, we can write these terms as
+            where \(Y\) represents the target values of classification or regression and \(a_{3,i}\) is the i-th term of the Output Layer array. According to the equation of Gradient Descent above, our next step is to calculate the derivatives of loss function. Using the <a href='https://en.wikipedia.org/wiki/Chain_rule'>Chain Rule</a>, we can write the derivative of \(E\) regards \(W_2\) as
 
             $$ \frac{\partial E}{\partial W_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial W_2}}_{3} $$  
     
             and each derivative (1, 2 and 3) can be calculated in a separated way. The first term can calculated as the partial derivative of the sum, 
 
-            $$ \frac{\partial E}{\partial a_3} = \frac{\partial}{\partial a_3} \left(\frac{1}{2}\sum_i(Y_i - a_{i,3})^2 \right) = (a_{i,3} - Y_i)$$
+            $$ \frac{\partial E}{\partial a_{3}} = \frac{\partial}{\partial a_{3}} \left(\frac{1}{2}\sum_i(Y_i - a_{i,3})^2 \right) = (a_{3} - Y)$$
 
             The second term is basically the derivative of the activation term, 
 
             $$ \frac{\partial a_3}{\partial z_2} = \frac{\partial}{\partial z_2}\left( \sigma_2(z_2)\right) = \sigma_2'(z_2) $$
 
-            Note that the derivative of the sigmoid function is \(\sigma'(x) = x * (1 - x)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. The last and third term can be written as, 
+            where \(z_2 = a_2 * W_2 + b_2\). The last and third term can be written as, 
 
             $$ \frac{\partial z_2}{\partial W_2} = \frac{\partial}{\partial W_2}\left( \sum a_2 * W_2 + b_2 \right) = a_2 $$
 
-            Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
+            Note that all derivative above are arrays. Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
 
             $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)}_{\delta_2} \underbrace{\sigma'_2(z_2)}_{softmax\ deriv. = 1} a_3 = a_3^T \delta_2 $$ 
 
@@ -147,16 +147,17 @@
 
             $$ \frac{\partial E}{\partial b_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial b_2}}_{3} $$  
 
-            Note that the terms 1 and 2 were already calculated above and only the third term needs to be calculated. This derivative is equals to unity, i.e., \( \frac{\partial a_3}{\partial b_2} = \frac{\partial}{\partial b_2} (b_2 + \sum a_2 * W_2)=1 \) so the equation above can be re-written as, 
+            Note that the terms 1 and 2 were already calculated and only the third term needs to be calculated. This derivative is equals to unity, i.e., \( \frac{\partial a_3}{\partial b_2} = \frac{\partial}{\partial b_2} (b_2 + \sum a_2 * W_2)=1 \) so the equation above can be re-written as, 
 
-            $$ \frac{\partial E}{\partial b_2} = (a_3 - Y) \sigma'_2(z_3)(1) = \delta_2 $$              
+            $$ \frac{\partial E}{\partial b_2} = (a_3 - Y) \sigma'_2(z_2)(1) = \delta_2 $$              
             <p>
-            Similarly, we can calculate the derivatives regards the weights and bias terms \(W_1\) and \(b_1\). However, these derivatives are a bit more complicated to be derived but still deductible,  
+            Similarly, we can calculate the derivatives regards the weights and bias terms between the Input and Hidden Layers, i.e., \(W_1\) and \(b_1\). However, these derivatives are a bit more complicated to be derived but still deductible,  
 
             $$ \frac{\partial E}{\partial W_1} = \frac{\partial E}{\partial a_2} \frac{\partial a_2}{\partial z_2} \frac{\partial z_2}{\partial W_1} = ... = X^T \delta_1 $$              
-            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Writting the derivative of the error function regards the first bias term (\(b_1\)), 
 
-            $$ \frac{\partial E}{\partial b_1} = \delta_1$$.
+            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = x * (1 - x)\), if you want the check the deduction of that, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
+
+            $$ \frac{\partial E}{\partial b_1} = \delta_1$$
 
             In practical terms, the Back Propagation algorithm written in Python can be expressed by the routine below.
             <code style="color:green"><p>
@@ -204,10 +205,10 @@
             </br>
             </code>
 
-            Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
+            The regularization term (<code>reg_lambda</code>) is used in the routine above but not explictly explained here. This term is employed to avoid overfitting. It will be for another post in the future. Now, just consider <code>reg_lambda = 0</code>. Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
             <ul>
             <li>
-             Pass the training sample through the ANN, using the weights and bias (Foward Propagation).
+             Pass the training sample through the ANN, using the current weights and bias (Foward Propagation).
             </li>
             <li>
              Calculate the Gradient Descent using the Back Propagation formalism and update the weights \(W\) and bias \(b\) terms. 
