@@ -102,16 +102,14 @@
             </p>
             $$ z_1 = X * W_1 + b_1$$
 
-            being the dimensions of the weight and bias are equal to (\(n_{feature}, n_{hidden})\) and (\(n_{hidden}, 1)\), respectively. Note that the bias term \(b_1\) is just an additive term and the dimension of \(a_2\) is consequently (\(n_{obj}, n_{hidden})\). The powerful skill of ANNs is represented by their capacity of complex and non-linearity modelling. Just considering the matrix multiplication above is not enough to reach such complexity. The next step is to pass our multiplication matrix result through an activation function, which decides whether it should be considered (or not) as a good or bad result for the layer, given the necessary complexity to fit the model to the data. There are many activation functions around but the main and most famous activation function is the <a href='https://en.wikipedia.org/wiki/Sigmoid_function'>sigmoid</a>. Figure 2 shows the profile of the sigmoid function., being 
-
-            $$ sigmoid(x) = \frac{1}{1 + e^{-x}}$$
+            being the dimensions of the weight and bias are equal to (\(n_{feature}, n_{hidden})\) and (\(n_{hidden}, 1)\), respectively. Note that the bias term \(b_1\) is just an additive term and the dimension of \(a_2\) is consequently (\(n_{obj}, n_{hidden})\). The powerful skill of ANNs is represented by their capacity of complex and non-linearity modelling. Just considering the matrix multiplication above is not enough to reach such complexity. The next step is to pass our multiplication matrix result through an activation function, which decides whether it should be considered (or not) as a good or bad result for the layer, given the necessary complexity to fit the model to the data. There are many activation functions around but the main and most famous activation function is the <a href='https://en.wikipedia.org/wiki/Sigmoid_function'>sigmoid</a>. Figure 2 shows the profile of the sigmoid(x) and others functions, such as tanh(x) and REctified Linear Unit aka ReLU(x). 
 
             <figure>
-            <img src="graphs/sigmoid.png" class="center">
-            <figcaption><b>Figure 2</b>: The sigmoid function.</figcaption>
+            <img src="graphs/activation_functions.png" class="center",  width="720" height="480">
+            <figcaption><b>Figure 2</b>: The sigmoid(x), tanh(x) and ReLU(x) functions.</figcaption>
             </figure>
 
-            The values of the sigmoid function spam between 0 and 1. The activated values of the Hidden Layer is then defined as \(a_2 = sigmoid(z_1)\). Other examples of activation functions are <a href='https://en.wikipedia.org/wiki/Softmax_function'>softmax</a>, rectified linear unit (<a href='https://en.wikipedia.org/wiki/Rectifier_(neural_networks)'>ReLU</a>) and \(tanh(x)\).
+            The values of the sigmoid function spam between 0 and 1 but it varies if one uses another activation function. The activated values of the Hidden Layer is then defined as \(a_2 = g(z_1)\), where g is the activation function. 
             </p>
 
             <p>
@@ -128,10 +126,13 @@
                 &emsp;&emsp; Sigmoid activation function</br>
                 &emsp;&emsp;"""</br>
                 &emsp;&emsp;if deriv == False:</br>
-                &emsp;&emsp;&emsp;&emsp;return 1.0/(1 + np.exp(-x))</br>
+                &emsp;&emsp;&emsp;&emsp;return 1.0 / (1.0 + np.exp(-x))</br>
                 &emsp;&emsp;else:</br>
-                &emsp;&emsp;&emsp;&emsp;return x * (1.0 - x) </br>
+                &emsp;&emsp;&emsp;&emsp;sigma =  1.0 / (1.0 + np.exp(-x)) </br>
+
+                &emsp;&emsp;&emsp;&emsp;return sigma * (1.0 - sigma) </br>
             </br>
+
             # Input -> Hidden Layer
             </br>
 
@@ -139,6 +140,8 @@
             a2 = sigmoid(z1, deriv = False) </br>
             </br>
             </code>
+
+            Other activation functions in Python can be found in the link to my GitHub below. 
 
             <p>
             Similar procedure between the Input and Hidden Layers is done now between the Hidden Layer and the Output Layer. Note that now we use the output of the hidden layer \(a_2\) as the new input. Thus, 
@@ -179,12 +182,6 @@
             <p>
               It is important to know how ANNs work but all this process above is already optimized by several packages in Python and R. Some examples are represented by <a href='https://keras.io/'>Keras</a>, <a href='https://www.tensorflow.org/'>Tensorflow</a> and <a href='http://deeplearning.net/software/theano/'> Theano</a>. Some nice explanations of how ANN works are also in Data Science and Machine Learning blogs, then check the references below. If you want the full code of this post for didatic purposes, please check my <a href='https://github.com/mvcduarte/Neural-Network'>GitHub - Neural Network from Scratch</a> using the <a href='http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html'>make_moons</a> dataset. This post was just half of the story, the next part is the <a href='ann_bp.html'>Neural Networks - Part 2: BackPropagation </a>. If you have comments/suggestions about this post, please send me an <a href="mailto:mvcduarte@gmail.com?Subject=blog_ML" target="_top">e-mail</a>.
             </p>
-            <!--
-            <figure>
-            <img class="img-fluid" src="graphs/animation_ann.gif" alt="">
-            <figcaption>Figure 2: The training sample in the feature space. Points in different colours represent distinct classes and the shaded areas shows the probability regions of classes. </figcaption>
-            </figure>
-            -->
 
             <p><b>Some references:</b></p>
               <p>

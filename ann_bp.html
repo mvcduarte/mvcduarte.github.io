@@ -88,7 +88,7 @@
             Let us remember the formalism described in the Part 1 post. Following the same architecture shown in the previous post, the Foward Propagation can be defined in only one line, 
             </p>
 
-            $$ a_3 = \sigma_2(\sum \underbrace{(\sigma_1(\sum X * W_1 + b_1))}_{a_2} * W_2 + b_2) $$
+            $$ a_3 = \sigma_2(\sum \underbrace{W_2^T * (\sigma_1(\sum X * W_1 + b_1))}_{a_2} + b_2) $$
             
             </br>
             
@@ -103,14 +103,14 @@
                 &emsp;&emsp;W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2'] </br>
                 </br>
                 &emsp;&emsp;z1 = X.dot(W1) + b1 </br>
-                &emsp;&emsp;a2 = sigmoid(z1, deriv = False)</br>
+                &emsp;&emsp;a2 = tanh(z1, deriv = False)</br>
                 &emsp;&emsp;z2 = a2.dot(W2) + b2 </br>
                 &emsp;&emsp;a3 = softmax(z2)</br>
                 </br>
                 &emsp;&emsp;return a3</br>
             </br>
             </code>
-            being the activation function between the Input and Hidden Layer a sigmoid and a softmax between the Hidden Layer and the Output Layer. The values of weights and bias arrays are started in a randomic way and at the first iteraction or epoch, the prediction and classification is quite bad. 
+            being the activation function between the Input and Hidden Layer a tanh(x) and a softmax(x) between the Hidden Layer and the Output Layer. The values of weights and bias arrays are started in a randomic way and at the first iteraction or epoch, the prediction and classification is quite bad. 
             <p>
 
             In this way, our next step is to update the weights and bias arrays after each iteraction (Foward Propagation) in order to get closer to the desired goal. The Back Propagation calculates the difference between the obtained and target values at the output layer and calculates the gradient of weights and bias to update them. The Gradient Descent is employed here and it is based on the derivatives of the loss function \(E\) as a function of the weights and bias, i.e.,   
@@ -123,41 +123,40 @@
 
             $$ E = \frac{1}{2} \sum_i(a_{3,i} - Y_i)^2 $$
 
-            where \(Y\) represents the target values of classification or regression and \(a_{3,i}\) is the i-th term of the Output Layer array. According to the equation of Gradient Descent above, our next step is to calculate the derivatives of loss function. Using the <a href='https://en.wikipedia.org/wiki/Chain_rule'>Chain Rule</a>, we can write the derivative of \(E\) regards \(W_2\) as
+            where \(Y\) represents the target values of classification or regression and \(a_{3,i}\) is the i-th term of the Output Layer array. According to the equation of Gradient Descent above, our next step is to calculate the derivatives of loss function. Using the <a href='https://en.wikipedia.org/wiki/Chain_rule'>Chain Rule</a>, we can write these terms as
 
             $$ \frac{\partial E}{\partial W_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial W_2}}_{3} $$  
     
             and each derivative (1, 2 and 3) can be calculated in a separated way. The first term can calculated as the partial derivative of the sum, 
 
-            $$ \frac{\partial E}{\partial a_{3}} = \frac{\partial}{\partial a_{3}} \left(\frac{1}{2}\sum_i(Y_i - a_{i,3})^2 \right) = (a_{3} - Y)$$
+            $$ \frac{\partial E}{\partial a_3} = \frac{\partial}{\partial a_3} \left(\frac{1}{2}\sum_i(Y_i - a_{i,3})^2 \right) = (a_{i,3} - Y_i)$$
 
             The second term is basically the derivative of the activation term, 
 
             $$ \frac{\partial a_3}{\partial z_2} = \frac{\partial}{\partial z_2}\left( \sigma_2(z_2)\right) = \sigma_2'(z_2) $$
 
-            where \(z_2 = a_2 * W_2 + b_2\). The last and third term can be written as, 
+            Note that the derivative of the tanh(x) function is \(1 - tanh(x)^2\), if you want the check the deduction of that, check this <a href= 'http://math2.org/math/derivatives/more/hyperbolics.htm'>link </a>. The last and third term can be written as, 
 
             $$ \frac{\partial z_2}{\partial W_2} = \frac{\partial}{\partial W_2}\left( \sum a_2 * W_2 + b_2 \right) = a_2 $$
 
-            Note that all derivative above are arrays. Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
+            Putting all terms together, the derivative of the error function regards \(W_2\) can be defined as, 
 
-            $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)\sigma'_2(z_2)}_{\delta_2} a_2 = a_2^T \delta_2 $$ 
+            $$ \frac{\partial E}{\partial W_2} = \underbrace{(a_3 - Y)}_{\delta_2} \underbrace{\sigma'_2(z_2)}_{softmax\ deriv. = 1} a_3 = a_3^T \delta_2 $$ 
 
-            On the other hand, the derivative regards the bias factor \(b_2\) can be calculated using the same way as defined above for \(W_2\). Similarly, the derivative can be written as follows, 
+            The derivative of softmax activation function is equals to 1. On the other hand, the derivative regards the bias factor \(b_2\) can be calculated using the same way as defined above for \(W_2\). Similarly, the derivative can be written as follows, 
 
             $$ \frac{\partial E}{\partial b_2} = \underbrace{\frac{\partial E}{\partial a_3}}_{1} \underbrace{\frac{\partial a_3}{\partial z_2}}_{2} \underbrace{\frac{\partial z_2}{\partial b_2}}_{3} $$  
 
-            Note that the terms 1 and 2 were already calculated and only the third term needs to be calculated. This derivative is equals to unity, i.e., \( \frac{\partial a_3}{\partial b_2} = \frac{\partial}{\partial b_2} (b_2 + \sum a_2 * W_2)=1 \) so the equation above can be re-written as, 
+            Note that the terms 1 and 2 were already calculated above and only the third term needs to be calculated. This derivative is equals to unity, i.e., \( \frac{\partial a_3}{\partial b_2} = \frac{\partial}{\partial b_2} (b_2 + \sum a_2 * W_2)=1 \) so the equation above can be re-written as, 
 
-            $$ \frac{\partial E}{\partial b_2} = (a_3 - Y) \sigma'_2(z_2)(1) = \delta_2 $$              
+            $$ \frac{\partial E}{\partial b_2} = (a_3 - Y) \sigma'_2(z_3)(1) = \delta_2 $$              
             <p>
-            Similarly, we can calculate the derivatives regards the weights and bias terms between the Input and Hidden Layers, i.e., \(W_1\) and \(b_1\). However, these derivatives are a bit more complicated to be derived but still deductible,  
+            Similarly, we can calculate the derivatives regards the weights and bias terms \(W_1\) and \(b_1\). However, these derivatives are a bit more complicated to be derived but still deductible,  
 
             $$ \frac{\partial E}{\partial W_1} = \frac{\partial E}{\partial a_2} \frac{\partial a_2}{\partial z_2} \frac{\partial z_2}{\partial W_1} = ... = X^T \delta_1 $$              
+            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Writting the derivative of the error function regards the first bias term (\(b_1\)), 
 
-            where \(\delta_1 = \delta_2 W_2^T \sigma'_1(z_2) = \delta_2 W_2^T [a_2 * (1 - a_2)]\). Note that the derivative of the sigmoid function (activation function between the Input and Hidden Layer) is \(\sigma'(x) = \sigma(x) * (1 - \sigma(x)) = a * (1 - a)\), if you want the check its deduction, check this <a href= 'https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x'>link </a>. Writting the derivative of the error function regards the first bias term (\(b_1\)), 
-
-            $$ \frac{\partial E}{\partial b_1} = \delta_1$$
+            $$ \frac{\partial E}{\partial b_1} = \delta_1$$.
 
             In practical terms, the Back Propagation algorithm written in Python can be expressed by the routine below.
             <code style="color:green"><p>
@@ -173,7 +172,7 @@
                 &emsp;&emsp;# Define delta2 and delta1</br>
                 &emsp;&emsp;delta2 = a3 </br>
                 &emsp;&emsp;delta2[range(ann_model.n_train), ann_model.Y_train] -= 1 </br>
-                &emsp;&emsp;delta1 = (delta2).dot(W2.T) * a2 * (1. - a2)</br>
+                &emsp;&emsp;delta1 = (delta2).dot(W2.T) * tanh(a2, deriv = True)</br>
                 </br> 
                 &emsp;&emsp;# Weights</br>
                 </br> 
@@ -205,14 +204,10 @@
             </br>
             </code>
 
-            The regularization term (<code>reg_lambda</code>) is used in the routine above but not explictly explained here. This term is employed to avoid overfitting. It will be for another post in the future. The learning rate \(\epsilon\) defines the convergence speed, so if you define it large, your best solution will be only around the best solution but always oscillating around it. On the other hand, a relative too small \(\epsilon\) will need more iteractions (computational time) to converge to the best solution. What's the best value? It is a good exercise to start playing with the Neural Network code. Now, just consider <code>reg_lambda = 0</code>. 
-            </p>
-            <p>
             Ok, now all the routines are described and we can finally run our ANN. Then the working flow is the following: 
-            </p>
             <ul>
             <li>
-             Pass the training sample through the ANN, using the current weights and bias (Foward Propagation).
+             Pass the training sample through the ANN, using the weights and bias (Foward Propagation).
             </li>
             <li>
              Calculate the Gradient Descent using the Back Propagation formalism and update the weights \(W\) and bias \(b\) terms. 
@@ -223,16 +218,16 @@
             </ul>
 
             <p>
-            Using the dataset <a href='http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html'>make_moons</a>, we run our Neural Network over 1,000 iteractions, calculating the Foward and Back Propagations each epoch. Figure 2 shows the parameter space, some elements or objects of the training sample and the shaded area indicates the classification and its border between the two classes (red and blue). At the top of the animation, we can see the number of iteractions of the Neural Network and the score (fraction of objects in the training sample correctly classified). As the number of iteractions increases, the weights and bias terms get closer to the solutions and consequently the objects are correctly classified. The borders defined by the Neural Network between the groups becomes more efficient and well defined. Figure 3 shows the fraction of objects wrongly classified as a function of the iteraction. It is clear that the updated weights and bias arrays get closer to the minimal, providing high fraction of correctly classified elements in the validation sample. It is important to mention that the higher the number of nodes in the hidden layer or number of hidden layers, the better is the classification as the training runs. Again, the overfitting starts having an important role in this high-complexity models. The example shown in Figure 2 uses 10 nodes in the hidden layers and presented a score of 97% at the end of the iteractions. For this example, we used the sigmoid at the Input-Hidden Layers and the softmax at the Hidden-Output Layers. Of course you can play with that and change the activation functions (e.g. tanh(x)) shows above, but the equations derivated above slightly change.  
+            Using the dataset <a href='http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html'>make_moons</a>, we run our Neural Network over 1,000 iteractions, calculating the Foward and Back Propagations each epoch. Figure 2 shows the parameter space, some elements or objects of the training sample and the shaded area indicates the classification and its border between the two classes (red and blue). At the top of the animation, we can see the number of iteractions of the Neural Network and the score (fraction of objects in the training sample correctly classified). As the number of iteractions increases, the weights and bias terms get closer to the solutions and consequently the objects are correctly classified. The borders defined by the Neural Network between the groups becomes more efficient and well defined. Figure 3 shows the fraction of objects wrongly classified as a function of the iteraction. It is clear that the updated weights and bias arrays get closer to the minimal, providing high fraction of correctly classified elements in the validation sample. It is important to mention that the higher the number of nodes in the hidden layer or number of hidden layers, the better is the classification as the training runs. Again, the overfitting starts having an important role in this high-complexity models. The example shown in Figure 2 uses 10 nodes in the hidden layers and presented a score of 97% at the end of the iteractions. For this example, we used the sigmoid at the Input-Hidden Layers and the softmax at the Hidden-Output Layers. Of course you can play with that and change the activation functions (e.g. sigmoid(x) or ReLU(x)) showed before, but the equations derivated above slightly change.  
             </p>
 
             <figure>
-            <img class="img-fluid" src="graphs/animation_ann.gif" alt="">
+            <img class="img-fluid" src="graphs/animation_ann.gif" alt="", width="360" height="240">
             <figcaption><b>Figure 2</b>: The training sample in the feature space. Points in different colours represent distinct classes and the shaded areas shows the probability regions of classes. </figcaption>
             </figure>
 
             <figure>
-            <img class="img-fluid" src="graphs/animation_ann_score.gif" alt="">
+            <img class="img-fluid" src="graphs/animation_ann_score.gif" alt="",  width="720" height="480">
             <figcaption><b>Figure 3</b>: Fraction of wrongly classified objects in the validation sample as a function of the epochs or iteractions of the Neural Network. </figcaption>
             </figure>
 
