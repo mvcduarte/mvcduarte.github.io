@@ -88,7 +88,7 @@
             Let us remember the formalism described in the Part 1 post. Following the same architecture shown in the previous post, the Foward Propagation can be defined in only one line, 
             </p>
 
-            $$ a_3 = \sigma_2(\sum \underbrace{W_2^T * (\sigma_1(\sum X * W_1 + b_1))}_{a_2} + b_2) $$
+            $$ a_3 = \sigma_2(\sum \underbrace{(\sigma_1(\sum X * W_1 + b_1))}_{a_2} W_2 + b_2) $$
             
             </br>
             
